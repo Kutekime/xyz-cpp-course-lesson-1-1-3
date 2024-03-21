@@ -14,6 +14,9 @@ const float ACCELERATION = 20.f; // Pixels per seconds per seconds
 const int NUM_APPLES = 20;
 const float APPLE_SIZE = 20.f;
 
+//Init game state
+int new_NUM_APPLES = 20;
+
 int main()
 {
 	int seed = (int)time(nullptr);
@@ -37,12 +40,10 @@ int main()
 	//Init apples
 	float appleX[NUM_APPLES];
 	float appleY[NUM_APPLES];
-	bool isAppleEaten[NUM_APPLES];
 	sf::CircleShape	 applesShape[NUM_APPLES];
 
 	for (int i = 0; i < NUM_APPLES; ++i)
 	{
-		isAppleEaten[i] = false;
 		appleX[i] = rand() / (float)RAND_MAX * SCREEN_WIDTH;
 		appleY[i] = rand() / (float)RAND_MAX * SCREEN_HEIGHT;
 
@@ -119,50 +120,51 @@ int main()
 		{
 			//Stop game
 			window.close();
-			break;
+			main();
 		}
 
 		for (int i = 0; i < NUM_APPLES; ++i)
 		{
-			if (!isAppleEaten[i])
+			//Check colliscions for squares
+
+			/*float dx = fabs(playerX - appleX[i]);
+			float dy = fabs(playerY - appleY[i]);
+			if (dx <= (APPLE_SIZE + PLAYER_SIZE) / 2.f &&
+				dy <= (APPLE_SIZE + PLAYER_SIZE) / 2.f)
 			{
-				//Check colliscions for squares
+				++numEatenApples;
+			}*/
 
-				/*float dx = fabs(playerX - appleX[i]);
-				float dy = fabs(playerY - appleY[i]);
-				if (dx <= (APPLE_SIZE + PLAYER_SIZE) / 2.f &&
-					dy <= (APPLE_SIZE + PLAYER_SIZE) / 2.f)
-				{
-					isAppleEaten[i] = true;
-					++numEatenApples;
-				}*/
+			//Check colliscions for circles
+			float squareDistance = (playerX - appleX[i]) * (playerX - appleX[i]) +
+				(playerY - appleY[i]) * (playerY - appleY[i]);
+			float squareRadiusSum = (APPLE_SIZE + PLAYER_SIZE) * (APPLE_SIZE + PLAYER_SIZE) / 4;
+			if (squareDistance <= squareRadiusSum)
+			{
+				++numEatenApples;
 
-				//Check colliscions for circles
-				float squareDistance = (playerX - appleX[i]) * (playerX - appleX[i]) +
-					(playerY - appleY[i]) * (playerY - appleY[i]);
-				float squareRadiusSum = (APPLE_SIZE + PLAYER_SIZE) * (APPLE_SIZE + PLAYER_SIZE) / 4;
-				if (squareDistance <= squareRadiusSum)
-				{
-					isAppleEaten[i] = true;
-					++numEatenApples;
-				}
+				//create new apple
+				appleX[i] = rand() / (float)RAND_MAX * SCREEN_WIDTH;
+				appleY[i] = rand() / (float)RAND_MAX * SCREEN_HEIGHT;
+
+				applesShape[i].setRadius(APPLE_SIZE / 2.f);
+				applesShape[i].setFillColor(sf::Color::Green);
+				applesShape[i].setOrigin(APPLE_SIZE / 2.f, APPLE_SIZE / 2.f);
+				applesShape[i].setPosition(appleX[i], appleY[i]);
 			}
 		}
 		
-		if (numEatenApples == NUM_APPLES)
+		/*if (numEatenApples == NUM_APPLES)
 		{
 			window.close();
 			break;
-		}
+		}*/
 
 		window.clear();
 		playerShape.setPosition(playerX, playerY);
 		for (int i = 0; i < NUM_APPLES; ++i)
 		{
-			if (!isAppleEaten[i])
-			{
-				window.draw(applesShape[i]);
-			}
+			window.draw(applesShape[i]);
 		}
 		window.draw(playerShape);
 		window.display();
