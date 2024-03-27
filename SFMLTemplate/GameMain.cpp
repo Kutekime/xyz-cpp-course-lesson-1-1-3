@@ -130,13 +130,19 @@ int main()
 			playerSpeed = 0;
 			scoreText.setString("GAME OVER!!! Apples eaten: " + std::to_string(numEatenApples) + ". Press Enter!");
 			scoreText.setFillColor(sf::Color::Red);
-			scoreText.setPosition(SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 2.5f);
-			/*scoreText.setFillColor(sf::Color::Yellow);
-			scoreText.setPosition(10.f, 10.f);*/
+			scoreText.setPosition(SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 2.5f);			
 
 			//Restart
 			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
 				numEatenApples = 0;
+
+				for (int i = 0; i < NUM_APPLES; ++i)
+				{
+					appleX[i] = rand() / (float)RAND_MAX * SCREEN_WIDTH;
+					appleY[i] = rand() / (float)RAND_MAX * SCREEN_HEIGHT;
+
+					applesShape[i].setPosition(appleX[i], appleY[i]);
+				}
 				
 				scoreText.setString("Apples eaten: " + std::to_string(numEatenApples));
 				scoreText.setFillColor(sf::Color::Yellow);
@@ -172,9 +178,6 @@ int main()
 				appleX[i] = rand() / (float)RAND_MAX * SCREEN_WIDTH;
 				appleY[i] = rand() / (float)RAND_MAX * SCREEN_HEIGHT;
 
-				applesShape[i].setRadius(APPLE_SIZE / 2.f);
-				applesShape[i].setFillColor(sf::Color::Green);
-				applesShape[i].setOrigin(APPLE_SIZE / 2.f, APPLE_SIZE / 2.f);
 				applesShape[i].setPosition(appleX[i], appleY[i]);
 				
 				
