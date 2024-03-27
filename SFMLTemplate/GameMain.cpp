@@ -4,18 +4,16 @@
 #include <SFML/Graphics.hpp>
 #include <SFML/Audio.hpp>
 
+
 //Init game constants
 const std::string RESOURCES_PATH = "Resources/";
 const int SCREEN_WIDTH = 800;
 const int SCREEN_HEIGHT = 600;
 const float INITIAL_SPEED = 100.f; // Pixels per seconds
 const float PLAYER_SIZE = 20.f;
-const float ACCELERATION = 20.f; // Pixels per seconds per seconds
+const float ACCELERATION = 200000.f; // Pixels per seconds per seconds
 const int NUM_APPLES = 20;
 const float APPLE_SIZE = 20.f;
-
-//Init game state
-int new_NUM_APPLES = 20;
 
 int main()
 {
@@ -42,6 +40,16 @@ int main()
 	float appleY[NUM_APPLES];
 	sf::CircleShape	 applesShape[NUM_APPLES];
 
+	//Inits score
+	//float scoreText = '0';
+	sf::Font font;
+	font.loadFromFile(RESOURCES_PATH + "Fonts/Roboto-Regular.ttf");
+	sf::Text scoreText;
+	scoreText.setFont(font);
+	scoreText.setCharacterSize(24);
+	scoreText.setFillColor(sf::Color::Yellow);
+	scoreText.setPosition(10.f, 10.f);
+
 	for (int i = 0; i < NUM_APPLES; ++i)
 	{
 		appleX[i] = rand() / (float)RAND_MAX * SCREEN_WIDTH;
@@ -54,6 +62,7 @@ int main()
 	}
 
 	int numEatenApples = 0;
+	scoreText.setString("Apples eaten: " + std::to_string(numEatenApples));
 
 	//Init game clock
 	sf::Clock gameClock;
@@ -93,8 +102,7 @@ int main()
 			playerDirection = 3;
 		}
 
-		// Acceleration
-		playerSpeed += ACCELERATION * deltaTime;
+		
 
 		//Update player state
 		if (playerDirection == 0)
@@ -119,8 +127,25 @@ int main()
 			playerY - PLAYER_SIZE / 2.f < 0.f || playerY + PLAYER_SIZE / 2.f > SCREEN_HEIGHT)
 		{
 			//Stop game
-			window.close();
-			main();
+			playerSpeed = 0;
+			scoreText.setString("GAME OVER!!! Apples eaten: " + std::to_string(numEatenApples) + ". Press Enter!");
+			scoreText.setFillColor(sf::Color::Red);
+			scoreText.setPosition(SCREEN_WIDTH / 2 - 200, SCREEN_HEIGHT / 2.5f);
+			/*scoreText.setFillColor(sf::Color::Yellow);
+			scoreText.setPosition(10.f, 10.f);*/
+
+			//Restart
+			if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter)) {
+				numEatenApples = 0;
+				
+				scoreText.setString("Apples eaten: " + std::to_string(numEatenApples));
+				scoreText.setFillColor(sf::Color::Yellow);
+				scoreText.setPosition(10.f, 10.f);
+				playerX = SCREEN_WIDTH / 2.f;
+				playerY = SCREEN_HEIGHT / 2.f;
+				playerSpeed = INITIAL_SPEED;
+				playerDirection = 0;
+			}
 		}
 
 		for (int i = 0; i < NUM_APPLES; ++i)
@@ -151,6 +176,12 @@ int main()
 				applesShape[i].setFillColor(sf::Color::Green);
 				applesShape[i].setOrigin(APPLE_SIZE / 2.f, APPLE_SIZE / 2.f);
 				applesShape[i].setPosition(appleX[i], appleY[i]);
+				
+				
+				// Acceleration
+				playerSpeed += ACCELERATION * deltaTime;
+				scoreText.setString("Apples eaten: " + std::to_string(numEatenApples));
+				
 			}
 		}
 		
@@ -167,6 +198,7 @@ int main()
 			window.draw(applesShape[i]);
 		}
 		window.draw(playerShape);
+		window.draw(scoreText);
 		window.display();
 	}
 
